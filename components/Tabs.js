@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableHighlight } from 'react-native'
 import { Button } from 'react-native-elements';
-import { cRedSecondary, cGreyMain, cBlueMain, cWhiteMain, cGreySecondary, cWhiteSecondary, cRedMain } from './colors';
+import { cRedSecondary, cGreyMain, cBlueMain, cWhiteMain, cGreySecondary, cWhiteSecondary, cRedMain } from '../assets/colors';
 import { Actions } from 'react-native-router-flux'
 import { Col, Row } from "react-native-easy-grid";
 import propTypes from 'prop-types';
@@ -57,10 +57,6 @@ export default class Index extends Component {
         },
     }
 
-    selected = (e) => {
-        console.log(e.defaultPrevented)
-    }
-
 
     render() {
         return (
@@ -79,7 +75,7 @@ export default class Index extends Component {
                                         backgroundColor: cRedSecondary,
                                         borderColor: cRedSecondary,
                                     }}
-                                    onPress={(e) => this.setState({selectedItem: item.tabName})}
+                                    onPress={(e) => this.setState({ selectedItem: item.tabName })}
                                 >
                                     <View
                                         style={{
@@ -94,19 +90,16 @@ export default class Index extends Component {
                                     >
                                         <Text
                                             style={{
+                                                fontWeight:'700',
+                                                fontSize: 17,
                                                 textAlign: 'center',
                                                 borderRadius: 0,
                                                 color: cWhiteMain,
                                             }}
-                                            
-
                                         >
                                             {item.tabName}
                                         </Text>
-
                                     </View>
-
-
                                 </Link>
                             </Col>)
                     }

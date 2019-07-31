@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
 import { View, Text, Animated } from 'react-native';
-import CloseBtn from './closeButton';
+import CloseBtn from '../assets/closeButton';
 import propTypes from 'prop-types';
 import Anime from 'animejs';
-import { cRedMain, cWhiteMain } from './colors'
+import { cRedMain, cWhiteMain } from '../assets/colors'
 
 
 // import console = require('console');

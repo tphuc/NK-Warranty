@@ -80,7 +80,7 @@ class Index extends Component {
 
     getData = () => {
         GetListWarrantyReturnByUser({
-            voucherID: 'mainCode',
+            voucherID: 'mainCode=A00816000000076',
             name: 'custName',
             phone: 'custTelp',
             location: 'custAddr',

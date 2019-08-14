@@ -140,10 +140,9 @@ export default class Index extends Component {
     }
 
     componentDidMount(){
-        console.log(this.props.match.params.voucherID)
         GetListWarrantyReturnByUser({
             voucherInfo: {
-                voucherID: `mainCode`,
+                voucherID: `mainCode=${this.props.match.params.voucherID}`,
                 buyDate: 'mainDate',
             },
             productInfo: {
@@ -157,7 +156,7 @@ export default class Index extends Component {
                 handling: 'rsltName'
             }
         })
-        .then(data => {console.log(data); this.setState({info: data})})
+        .then(data => {console.log(data); this.setState({info: data[0]})})
     }
     
     openPhotos = () => {
@@ -195,7 +194,7 @@ export default class Index extends Component {
     }
 
     render(props) {
-        var { info } = this.props;
+        var { info } = this.state;
         var { imageLoading, images } = this.state
 
 

@@ -26,18 +26,15 @@ const mapObjectByValues = (obj, storeArr, mapBy, parent = '') => {
             var pathSplited = parent.split('.')
             var pointerNewObj = travelPath(storeArr, pathSplited)
 
-            var pointerObjToMap = travelPath(obj, pathSplited)
-
             //filter
-            
-            pointerNewObj[key] = mapBy[pointerObjToMap[key]]
-            // if(filterArgs.length > 1){
+            var [filterField, filterValue] = obj[key].split('=')
+            pointerNewObj[key] = mapBy[filterField]
+            if(filterValue){
                
-            //     if(mapBy[filterArgs[0]] !== filterArgs[1] ) {
-            //         console.log('!=')
-            //         throw 'object not match by filter'
-            //     }
-            // }
+                if(pointerNewObj[key] !== filterValue ) {
+                    throw 'object not match by filter'
+                }
+            }
         }
     })
 }
@@ -56,11 +53,8 @@ export const GetListWarrantyReturnByUser = (keymaps, params = { EMplCode: EMplCo
                 var newdata = {};
                 try{
                     mapObjectByValues(keymaps, newdata, record)
-                    console.log(newdata)
                 } 
                 catch(e){
-                    console.log(e)
-                    console.log('exception')
                     return
                 }
                 returnData.push(newdata)

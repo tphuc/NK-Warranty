@@ -44,7 +44,7 @@ export default class Index extends Component {
             ,
             {
                 tabName: 'Đã xử lí',
-                route: '/complete'
+                route: '/history'
 
             }
         ],

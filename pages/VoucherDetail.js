@@ -9,6 +9,7 @@ import propTypes from 'prop-types';
 
 import ImagePicker from 'react-native-image-picker';
 import VoucherConfirmModal from './VoucherConfirmModal';
+import {GetListWarrantyReturnByUser} from '../config/api'
 
 
 const sectionHeaders = {
@@ -70,9 +71,7 @@ const ListItem = (props) => {
                         <View style={{ width: `${leftCol}0%`, padding: 3, ...leftElementStyle }}>
                             {leftIcon && <Icon name={leftIcon} type='feather' />}
                         </View>
-
                 }
-
                 {
                     rightElement ?
                         <Text style={{ width: `${rightCol}0%`, padding: 5, ...rightElementStyle }}>{rightElement}</Text> :
@@ -114,7 +113,7 @@ export default class Index extends Component {
 
 
     static defaultProps = {
-        info: {
+        info : {
             voucherInfo: {
                 voucherID: '',
                 buyDate: '11/9/2000',
@@ -129,16 +128,38 @@ export default class Index extends Component {
                 warrantyType: 'Bảo hành',
                 handling: 'Sửa chửa có VT-LK'
             }
-
         }
     }
 
+
     state = {
+        info: {},
         images: [],
         isModalVisible: false,
         imageLoading: false
     }
 
+    componentDidMount(){
+        console.log(this.props.match.params.voucherID)
+        GetListWarrantyReturnByUser({
+            voucherInfo: {
+                voucherID: `mainCode`,
+                buyDate: 'mainDate',
+            },
+            productInfo: {
+                name: 'art_Name',
+                seriNumber: 'art_Code',
+                modelNumber: 'artModel',
+            },
+            warrantyInfo: {
+                testInfo: 'caseExln',
+                warrantyType: 'rsltType',
+                handling: 'rsltName'
+            }
+        })
+        .then(data => {console.log(data); this.setState({info: data})})
+    }
+    
     openPhotos = () => {
 
         // maximum upload 3 picture
@@ -178,7 +199,7 @@ export default class Index extends Component {
         var { imageLoading, images } = this.state
 
 
-        info.voucherInfo.voucherID = this.props.match.params.voucherID
+        // info.voucherInfo.voucherID = this.props.match.params.voucherID
         return (
             <Fragment>
 

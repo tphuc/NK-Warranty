@@ -26,6 +26,7 @@ export default class Index extends Component {
             onClose,
             optionDropdownData,
             voucherID,
+            onChange,
         } = this.props
 
         return (
@@ -59,18 +60,18 @@ export default class Index extends Component {
                                 ref={ref => this.dropdown = ref}
                                 dropdownOffset={{ top: 0 }}
                                 data={optionDropdownData}
-                                onChangeText={(val) => this.setState({ selectOption: val })}
+                                onChangeText={(val) => {  this.setState({ selectOption: val }); onChange ? onChange(val) : '' }}
                             />
                         </Col>
                     </Row>
                     {
-                        this.state.selectOption === 'Lý do khác' &&
+                        this.state.selectOption === 'Giao lại vì lý do khác' &&
                         <Row style={{ maxHeight: 100 }}>
                             <Input
                                 label="Nhập lí do chuyển"
                                 placeholder='Lí do chuyển khác'
                                 labelStyle={{ color: 'black' }}
-                                onChangeText={(val) => this.setState({ otherReason: val })}
+                                onChangeText={(val) => {this.setState({ otherReason: val }); onChange ? onChange() : ''}}
                             />
                         </Row>
 

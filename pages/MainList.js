@@ -1,26 +1,31 @@
 import React, { Component, Fragment } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableHighlight } from 'react-native';
 import propTypes from 'prop-types';
-import { Button, Icon, Header, SearchBar } from 'react-native-elements';
+import { Header, SearchBar, Icon } from 'react-native-elements';
 import MenuBtn from '../assets/menuButton';
 import Appbar from '../components/Appbar';
-import anime from 'animejs';
-import { cWhiteMain, cRedMain, cRedSecondary } from '../assets/colors';
+import DatePicker, { dateToMMDDYYYY } from '../pages/DatePicker'
+
+import { cWhiteMain, cRedMain, cRedSecondary, cGreyMain, cGreySecondary, cWhiteSecondary } from '../assets/colors';
 import Tabs from '../components/Tabs';
 import Card from '../components/Cards';
 import { FlatList } from 'react-native';
 import { Route, Redirect } from "react-router-native";
-import { GetListWarrantyReturnByUser } from '../config/api';
+import { GetListWarrantyReturnByUser, GetHistoryWarrantyReturn } from '../config/api';
+import { NO_DATA, SEVER_NOT_RESPOND } from '../config/errors';
+import { VN_NO_WARRANTY, VN_SEVER_NOT_RESPOND } from '../config/words'
 
 
 
-//testing
+const errorDisplay = {
+    [NO_DATA]: VN_NO_WARRANTY,
+    [SEVER_NOT_RESPOND]: VN_SEVER_NOT_RESPOND
+}
 
 
-var testData = []
 
 
-const Home = () => <Text>Home</Text>;
+
 
 const List = (props) => <FlatList
     data={props.data}
@@ -40,47 +45,50 @@ class Index extends Component {
 
     state = {
         isAppbarOpened: false,
-        testData: [],
-        searchKey: ''
+        dataPending: [],
+        dataHistory: [],
+        searchKey: '',
+        filterModalOpen: false,
     }
 
     componentDidMount() {
-
-        // setTimeout(() => {
-        //     this.setState({
-        //         testData: [{
-        //             voucherID: 'A502996',
-        //             name: 'Nguyen Van A',
-        //             phone: '0889775268',
-        //             location: '99 Nguyễn Thị Minh Khai, District 1, Ho Chi Minh City',
-        //             product: "Laptop Macbook Pro 2015 model 15'inch MJLT2",
-        //             departure: '22/08/2019',
-        //             warehouse: 'Fremont, Califorina',
-        //             notes: 'Có tính phí',
-        //             price: '2.000.000'
-        //         },
-        //         {
-        //             voucherID: 'B502992',
-        //             name: 'Nguyen Van A',
-        //             phone: '088990080',
-        //             location: '170 Nơ Trang Long, Phường 12, Bình Thạnh, Hồ Chí Minh',
-        //             product: "Laptop Macbook Pro 2015 model 15'inch MJLT2",
-        //             departure: '31/07/2019',
-        //             warehouse: 'Fremont, Califorina',
-        //             notes: 'Có tính phí',
-        //             price: '2.000.000'
-        //         }]
-        //     });
-        // },
-        //  500)
-
-        this.getData()
-
+        this.getData('/pending')
     }
 
-    getData = () => {
+    constructor(props) {
+        super(props)
+
+        this.savedParams = {
+            fromDate: dateToMMDDYYYY(new Date()),
+            toDate: dateToMMDDYYYY(new Date())
+        }
+    }
+
+    getData = (route) => {
+
+        switch (route) {
+            case '/pending':
+                this.getListPendingWarranty({
+                    'EMplCode': '5000000217',
+                })
+                break
+
+            case '/history':
+                this.getHistoryWarranty({
+                    'FromDate': this.savedParams.fromDate,
+                    'To__Date': this.savedParams.toDate,
+                    'EMplCode': '5000000217',
+                })
+                break
+
+            default:
+                break
+        }
+    }
+
+    getListPendingWarranty = (params) => {
         GetListWarrantyReturnByUser({
-            voucherID: 'mainCode=A00816000000076',
+            voucherID: 'mainCode',
             name: 'custName',
             phone: 'custTelp',
             location: 'custAddr',
@@ -89,11 +97,37 @@ class Index extends Component {
             warehouse: 'wrhsName',
             notes: 'exlnNote',
             price: 'sum_HVAT'
-        })
-        .then(data => {this.setState({testData: data})})
-
-
+        },
+            params
+        )
+            .then(data => {
+                if (data.length) this.setState({ dataPending: data });
+                else this.setState({ dataPending: NO_DATA })
+            })
+            .catch(res => { console.log(res); this.setState({ dataPending: SEVER_NOT_RESPOND }) })
     }
+    getHistoryWarranty = (params) => {
+
+        GetHistoryWarrantyReturn({
+            voucherID: 'mainCode',
+            name: 'custName',
+            phone: 'custTelp',
+            location: 'custAddr',
+            product: 'art_Name',
+            departure: 'dlvrDate',
+            warehouse: 'wrhsName',
+            notes: 'exlnNote',
+            price: 'sum_HVAT'
+        },
+            params
+        )
+            .then(data => {
+                if (data.length) this.setState({ dataHistory: data });
+                else this.setState({ dataHistory: NO_DATA })
+            })
+            .catch(res => { console.log(res); this.setState({ dataHistory: SEVER_NOT_RESPOND }) })
+    }
+
 
     render() {
         return (
@@ -103,6 +137,7 @@ class Index extends Component {
                     leftComponent={<MenuBtn onPress={() => this.setState({ isAppbarOpened: true })}></MenuBtn>}
                     centerComponent={{ text: this.props.text, style: { color: cWhiteMain, fontWeight: "900", fontSize: 16, } }}
                     containerStyle={{ backgroundColor: cRedMain, paddingBottom: 10, margin: 0, }}
+                    rightComponent={this.tabs && this.tabs.getSelectedItem().route === '/history' && <Icon name='filter' color={cWhiteSecondary} type='feather' onPress={() => { this.setState({ filterModalOpen: true }) }} />}
                 />
                 <Tabs items={[
                     {
@@ -113,7 +148,10 @@ class Index extends Component {
                         tabName: 'Đã xử lí',
                         route: '/history'
                     }
-                ]} />
+                ]}
+                    onChange={item => this.getData(item.route)}
+                    ref={ref => this.tabs = ref}
+                />
                 <SearchBar
                     placeholder="tìm kiếm CT..."
                     onChangeText={(val) => this.setState({ searchKey: val.toUpperCase() })}
@@ -122,14 +160,52 @@ class Index extends Component {
                     round
                 />
                 <Route exact path='/pending' render={({ match }) =>
-                    <FlatList
-                        data={this.state.testData.length ? this.state.testData : [{}, {}]}
-                        renderItem={({ item }) => { return <Card info={item} match={match} searchKey={this.state.searchKey} ></Card> }}
-                        keyExtractor={(item, index) => index.toString()}
-                        extraData={this.state.searchKey}
-                    />}
+                    this.state.dataPending === NO_DATA || this.state.dataPending === SEVER_NOT_RESPOND ?
+                        <TouchableHighlight
+                            onPress={() => { this.getData('/pending'); this.setState({ dataPending: [] }); }}
+                            underlayColor={cWhiteSecondary}
+                        >
+                            <View >
+                                <Text style={{ alignSelf: 'center', color: 'grey', padding: 20 }} >{errorDisplay[this.state.dataPending]}</Text>
+                                <Icon type='feather' style={{ alignSelf: 'center' }} color='grey' name='refresh-cw' />
+                            </View>
+                        </TouchableHighlight>
+                        :
+                        <FlatList
+                            data={this.state.dataPending.length ? this.state.dataPending : [{}, {}]}
+                            renderItem={({ item }) => { return <Card info={item} match={match} searchKey={this.state.searchKey} ></Card> }}
+                            keyExtractor={(item, index) => index.toString()}
+                            extraData={this.state.searchKey}
+                        />}
                 />
-                <Route path='/history' component={Home} />
+                <Route exact path='/history' render={({ match }) =>
+
+                    <React.Fragment>
+                        {
+                            this.state.dataHistory === NO_DATA || this.state.dataHistory === SEVER_NOT_RESPOND ?
+                                <TouchableHighlight
+                                    underlayColor={cWhiteSecondary}
+                                    onPress={() => { this.getData('/history'); this.setState({ dataHistory: [] }); }}>
+                                    <View >
+                                        <Text style={{ alignSelf: 'center', color: 'grey', padding: 20 }} >{errorDisplay[this.state.dataHistory]}</Text>
+                                        <Icon type='feather' style={{ alignSelf: 'center' }} color='grey' name='refresh-cw' />
+                                    </View>
+                                </TouchableHighlight>
+                                :
+                                <FlatList
+                                    data={this.state.dataHistory.length ? this.state.dataHistory : [{}, {}]}
+                                    renderItem={({ item }) => { return <Card info={item} match={match} searchKey={this.state.searchKey} ></Card> }}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    extraData={this.state.searchKey}
+                                />
+                        }
+                        <DatePicker visible={this.state.filterModalOpen} onClose={() => this.setState({ filterModalOpen: false })} onApply={(start, end) => {
+                            this.savedParams.fromDate = start; this.savedParams.toDate = end;
+                            this.getHistoryWarranty({ 'FromDate': start, 'To__Date': end, 'EMplCode': '5000008873' })
+                        }} ></DatePicker>
+                    </React.Fragment>
+                }
+                />
                 <Appbar show={this.state.isAppbarOpened} onPressClose={() => this.setState({ isAppbarOpened: false })}></Appbar>
             </Fragment>
         )

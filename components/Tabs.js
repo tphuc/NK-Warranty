@@ -17,9 +17,9 @@ import { Link } from "react-router-native";
 export default class Index extends Component {
 
     constructor(props) {
-        super()
+        super(props)
         this.state = {
-            selectedItem: props.selectedItem
+            selectedItem: props.selectedItem ? props.selectedItem : (props.items.length ? props.items[0] : {})
         }
     }
     static propTypes = {
@@ -29,7 +29,7 @@ export default class Index extends Component {
             component: propTypes.node
         })),
         selectedItem: propTypes.string,
-        onClick: propTypes.func,
+        onChange: propTypes.func,
         badge: propTypes.bool
 
     }
@@ -48,7 +48,6 @@ export default class Index extends Component {
 
             }
         ],
-        selectedItem: ['Chờ xử lí', 'Đã xử lí'][0],
         selectedItemStyle: {
             borderBottomColor: cWhiteSecondary
         },
@@ -57,6 +56,9 @@ export default class Index extends Component {
         },
     }
 
+    getSelectedItem = () => {
+        return this.state.selectedItem
+    }
 
     render() {
         return (
@@ -75,7 +77,7 @@ export default class Index extends Component {
                                         backgroundColor: cRedSecondary,
                                         borderColor: cRedSecondary,
                                     }}
-                                    onPress={(e) => this.setState({ selectedItem: item.tabName })}
+                                    onPress={(e) => { this.setState({ selectedItem: item }); if(this.props.onChange) this.props.onChange(item)}}
                                 >
                                     <View
                                         style={{
@@ -85,12 +87,12 @@ export default class Index extends Component {
                                             justifyContent: 'center',
                                             borderBottomColor: cRedSecondary,
                                             borderBottomWidth: 4,
-                                            ...(item.tabName === this.state.selectedItem) ? this.props.selectedItemStyle : this.props.unselectedItemStyle,
+                                            ...(item.tabName === this.state.selectedItem.tabName) ? this.props.selectedItemStyle : this.props.unselectedItemStyle,
                                         }}
                                     >
                                         <Text
                                             style={{
-                                                fontWeight:'700',
+                                                fontWeight: '700',
                                                 fontSize: 17,
                                                 textAlign: 'center',
                                                 borderRadius: 0,

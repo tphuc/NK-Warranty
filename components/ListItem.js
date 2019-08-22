@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text, View} from 'react-native';
+import {Icon} from 'react-native-elements';
 
 export default ListItem = (props) => {
     const {
@@ -8,9 +9,11 @@ export default ListItem = (props) => {
 
         leftElement,
         leftIcon,
+        leftIconStyle,
 
         rightElement,
         rightIcon,
+        rightIconStyle,
 
         leftElementStyle,
         rightElementStyle,
@@ -28,15 +31,15 @@ export default ListItem = (props) => {
                 {
                     leftElement ?
                         <Text style={{ width: `${leftCol}0%`, padding: 3, ...leftElementStyle }}>{leftElement}</Text> :
-                        <View style={{ width: `${leftCol}0%`, padding: 3, ...leftElementStyle }}>
-                            {leftIcon && <Icon name={leftIcon} type='feather' />}
+                        <View style={{ width: `${leftCol}0%`, padding: 3, ...leftElementStyle,  }}>
+                            {leftIcon && <Icon name={leftIcon} type='feather' {...rightIconStyle} />}
                         </View>
                 }
                 {
                     rightElement ?
                         <Text style={{ width: `${rightCol}0%`, padding: 5, ...rightElementStyle }}>{rightElement}</Text> :
                         <View style={{ width: `${rightCol}0%`, padding: 5, ...rightElementStyle }}>
-                            {rightIcon && <Icon name={rightIcon} type='feather' onPress={rightIconOnPress} />}
+                            {rightIcon && <Icon name={rightIcon} type='feather' onPress={rightIconOnPress} {...rightIconStyle} />}
                         </View>
                 }
             </View>

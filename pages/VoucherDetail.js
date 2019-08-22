@@ -9,8 +9,13 @@ import propTypes from 'prop-types';
 
 import ImagePicker from 'react-native-image-picker';
 import VoucherConfirmModal from './VoucherConfirmModal';
-import {GetListWarrantyReturnByUser} from '../config/api'
+import {GetListWarrantyReturnByUser, GetListReasonChange, siteCode, userCode, userName, UpdateWarrantyReturn} from '../config/api'
 
+
+const MAIN_LOGS = {
+    success: 'Hoàn tất',
+    delay: 'Chuyển về chờ giao'
+}
 
 const sectionHeaders = {
     voucherInfo: 'Thông tin chứng từ',
@@ -29,17 +34,15 @@ const sectionSubHeaders = {
     handling: 'Loại xử lí'
 }
 
-const dropdownOption = [
-    {
-        value: 'Không liên lạc được khách',
-    }, 
-    {
-        value: 'Lý do khác',
-    }, 
-    {
-        value: 'Không đủ tiền',
-    }
-]
+
+const mapObjectByKeys = (obj, keys) => {
+    var newObj = {}
+    Object.keys(obj).forEach(key => {
+        if(keys.includes(key))
+            newObj[key] = obj[key]
+    })
+    return newObj
+}
 
 const ListItem = (props) => {
     const {
@@ -147,20 +150,35 @@ export default class Index extends Component {
             },
             productInfo: {
                 name: 'art_Name',
-                seriNumber: 'art_Code',
-                modelNumber: 'artModel',
+                seriNumber: 'art_Seri',
+                modelNumber: 'art_Code',
             },
             warrantyInfo: {
                 testInfo: 'caseExln',
                 warrantyType: 'rsltType',
                 handling: 'rsltName'
-            }
+            },
+
+            dlvrDept: "dlvrDept",
+            dlvrIndx: "dlvrIndx",
+            exlnNote: "exlnNote",
+            mainCode: 'mainCode',
+            mainDate: 'mainDate',
+        },{
+            'EMplCode': '5000000217',
         })
-        .then(data => {console.log(data); this.setState({info: data[0]})})
+        .then(data => {
+            this.setState({info: data[0]})
+        })
+
+        GetListReasonChange({
+            value: 'rfrnName'
+        })
+        .then(data => {this.reasonChanges = data})
+        
     }
     
     openPhotos = () => {
-
         // maximum upload 3 picture
         if (this.state.images.length === 3)
             return
@@ -193,12 +211,35 @@ export default class Index extends Component {
         });
     }
 
+    callUpdateWarranty = (main_Log, dtailLog) => {
+        const { info } = this.state
+        const params = {
+            dlvrDept: info.dlvrDept,
+            dlvrIndx: info.dlvrIndx,
+            exlnNote: info.exlnNote,
+            main_Log: main_Log,
+            dtailLog: dtailLog,
+            flagLock: 97,
+            mainCode: info.mainCode,
+            mainDate: info.mainDate,
+            dlvrDmTi: new Date(),
+            siteCode: siteCode,
+            userCode: userCode,
+            userName: userName,
+        }
+
+
+        return UpdateWarrantyReturn(params)
+        .then(res => console.log(res))
+        .catch(res => console.log(res.response))
+        
+    }
+
     render(props) {
         var { info } = this.state;
+        info = mapObjectByKeys(info, ['voucherInfo', 'productInfo', 'warrantyInfo'])
         var { imageLoading, images } = this.state
 
-
-        // info.voucherInfo.voucherID = this.props.match.params.voucherID
         return (
             <Fragment>
 
@@ -254,7 +295,6 @@ export default class Index extends Component {
                         leftElementStyle={{ fontWeight: '700' }}
                         rightIcon='camera'
                         rightIconOnPress={this.openPhotos} />
-
                     <Grid>
                         <Row>
                             {
@@ -279,6 +319,7 @@ export default class Index extends Component {
                                     title="Đã giao xong"
                                     buttonStyle={{ backgroundColor: cRedMain, height: 50 }}
                                     titleStyle={{ fontSize: 15 }}
+                                    onPress={() => this.callUpdateWarranty(MAIN_LOGS.success, 'Giao xong')}
                                 />
                             </Col>
                             <Col style={{ padding: 5, height: 100 }}>
@@ -297,7 +338,10 @@ export default class Index extends Component {
                     visible={this.state.isModalVisible}
                     onClose={() => this.setState({isModalVisible: false})}
                     voucherID={this.props.match.params.voucherID}
-                    optionDropdownData={dropdownOption}
+                    optionDropdownData={this.reasonChanges}
+                    onChange={(val) => {
+                        this.callUpdateWarranty(MAIN_LOGS.delay, 'lí do chuyển: ' + val).then(() => this.setState({isModalVisible: false}))
+                    }}
                 ></VoucherConfirmModal>
 
             </Fragment>

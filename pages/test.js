@@ -11,20 +11,22 @@ const travelPath = (obj, path) => {
     return pointer
 }
 
-// const mapObjectByValues = (obj, storeArr, mapBy, parent = '') => {
-//     Object.keys(obj).forEach(key => {
-//         if (typeof obj[key] === 'object') {
-//             let prefix = parent ? parent + '.' + key : key
-//             mapObjectByValues(obj[key], storeArr, mapBy, prefix)
-//         }
-//         else {
-//             var pathSplited = parent.split('.')
-//             var pointerNewObj = travelPath(storeArr, pathSplited)
-//             var pointerObjToMap = travelPath(obj, pathSplited)
-//             pointerNewObj[key] = 1
-//         }
-//     })
-// }
+const mapObjectByValues = (obj, storeArr, mapBy, parent = '') => {
+    Object.keys(obj).forEach(key => {
+        if (typeof obj[key] === 'object') {
+            let prefix = parent ? parent + '.' + key : key
+            mapObjectByValues(obj[key], storeArr, mapBy, prefix)
+        }
+        else {
+            var pathSplited = parent.split('.')
+            var pointerNewObj = travelPath(storeArr, pathSplited)
+            var pointerObjToMap = travelPath(obj, pathSplited)
+            pointerNewObj[key] = 1
+        }
+    })
+}
+
+
 
 data = []
 template1 = {

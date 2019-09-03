@@ -4,7 +4,8 @@ import propTypes from 'prop-types';
 import { Header, SearchBar, Icon } from 'react-native-elements';
 import MenuBtn from '../assets/menuButton';
 import Appbar from '../components/Appbar';
-import DatePicker, { dateToMMDDYYYY } from '../pages/DatePicker'
+import DatePicker, { dateToMMDDYYYY } from '../pages/DatePicker';
+
 
 import { cWhiteMain, cRedMain, cRedSecondary, cGreyMain, cGreySecondary, cWhiteSecondary } from '../assets/colors';
 import Tabs from '../components/Tabs';
@@ -13,8 +14,10 @@ import { FlatList } from 'react-native';
 import { Route, Redirect } from "react-router-native";
 import { GetListWarrantyReturnByUser, GetHistoryWarrantyReturn } from '../config/api';
 import { NO_DATA, SEVER_NOT_RESPOND } from '../config/errors';
-import { VN_NO_WARRANTY, VN_SEVER_NOT_RESPOND } from '../config/words'
+import { VN_NO_WARRANTY, VN_SEVER_NOT_RESPOND } from '../config/words';
 
+import { SetQueryResult, SetQueryParams } from '../redux/actions'
+import store from '../redux/store';
 
 
 const errorDisplay = {
@@ -49,6 +52,10 @@ class Index extends Component {
         dataHistory: [],
         searchKey: '',
         filterModalOpen: false,
+        savedParams: {
+            fromDate: dateToMMDDYYYY(new Date()),
+            toDate: dateToMMDDYYYY(new Date())
+        }
     }
 
     componentDidMount() {
@@ -57,15 +64,9 @@ class Index extends Component {
 
     constructor(props) {
         super(props)
-
-        this.savedParams = {
-            fromDate: dateToMMDDYYYY(new Date()),
-            toDate: dateToMMDDYYYY(new Date())
-        }
     }
 
     getData = (route) => {
-
         switch (route) {
             case '/pending':
                 this.getListPendingWarranty({
@@ -75,8 +76,8 @@ class Index extends Component {
 
             case '/history':
                 this.getHistoryWarranty({
-                    'FromDate': this.savedParams.fromDate,
-                    'To__Date': this.savedParams.toDate,
+                    'FromDate': store.getState() ? store.getState().params['FromDate'] : dateToMMDDYYYY(new Date()),
+                    'To__Date': store.getState() ? store.getState().params['To__Date'] : dateToMMDDYYYY(new Date()),
                     'EMplCode': '5000000217',
                 })
                 break
@@ -106,7 +107,9 @@ class Index extends Component {
             })
             .catch(res => { console.log(res); this.setState({ dataPending: SEVER_NOT_RESPOND }) })
     }
+
     getHistoryWarranty = (params) => {
+        store.dispatch(SetQueryParams(params))
 
         GetHistoryWarrantyReturn({
             voucherID: 'mainCode',
@@ -199,10 +202,23 @@ class Index extends Component {
                                     extraData={this.state.searchKey}
                                 />
                         }
-                        <DatePicker visible={this.state.filterModalOpen} onClose={() => this.setState({ filterModalOpen: false })} onApply={(start, end) => {
-                            this.savedParams.fromDate = start; this.savedParams.toDate = end;
-                            this.getHistoryWarranty({ 'FromDate': start, 'To__Date': end, 'EMplCode': '5000008873' })
-                        }} ></DatePicker>
+                        <DatePicker visible={this.state.filterModalOpen} onClose={() => {
+                            this.setState({ filterModalOpen: false });
+                        }}
+                            onApply={(start, end) => {
+
+                                this.setState({
+                                    savedParams: {
+                                        fromDate: start,
+                                        toDate: end
+                                    }
+                                });
+                                this.getHistoryWarranty({
+                                    'FromDate': start,
+                                    'To__Date': end,
+                                    'EMplCode': '5000000217',
+                                })
+                            }} ></DatePicker>
                     </React.Fragment>
                 }
                 />

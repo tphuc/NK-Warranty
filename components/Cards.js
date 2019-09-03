@@ -115,7 +115,7 @@ export default class Index extends Component {
                             shadowRadius: 3,
                         }}>
                             <Link
-                                to={`/pending/${this.props.info.voucherID}`}
+                                to={`${match.path}/${this.props.info.voucherID}`}
                                 underlayColor={cBlueSecondary}
                                 style={{
                                     height: 50,

@@ -5,7 +5,8 @@ import { Button } from 'react-native-elements'
 import ListItem from '../components/ListItem';
 import { Row, Col, Grid } from 'react-native-easy-grid'
 import { cWhiteMain, cRedMain, cBlueMain } from '../assets/colors';
-import {VN_TIME_TODAY, VN_TIME_LAST_WEEK, VN_TIME_TWO_WEEK, VN_TIME_CUST} from '../config/words'
+import {VN_TIME_TODAY, VN_TIME_LAST_WEEK, VN_TIME_TWO_WEEK, VN_TIME_CUST} from '../config/words';
+import store from '../redux/store'
 
 const getdateOffset = (date, offset) => {
     return new Date(date.getTime() + (offset * 24 * 60 * 60 * 1000));
@@ -30,10 +31,11 @@ export default class MyDatePicker extends Component {
 
     constructor(props) {
         super(props)
+        console.log(store.getState())
         this.state = {
             option: 'Hôm nay',
-            startDate: dateToMMDDYYYY(new Date()),
-            endDate: dateToMMDDYYYY(new Date()),
+            startDate: store.getState().params ? store.getState().params['FromDate'] : dateToMMDDYYYY(new Date()),
+            endDate: store.getState().params ? store.getState().params['To__Date']: dateToMMDDYYYY(new Date()),
         }
     }
 

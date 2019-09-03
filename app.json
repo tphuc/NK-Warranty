@@ -1,4 +1,10 @@
 {
   "name": "NKwarranty",
-  "displayName": "NKwarranty"
+  "displayName": "NKwarranty",
+  "expo": {
+    "name": "NK Warranty",
+    "slug": "nk-warranty",
+    "sdkVersion": "34.0.0",
+    "privacy": "public"
+  }
 }

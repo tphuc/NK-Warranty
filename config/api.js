@@ -1,6 +1,6 @@
 import axios from 'react-native-axios'
 // import console = require('console');
-export const Proxy = 'http://localhost:10000'
+export const Proxy = 'https://86aa795e.ngrok.io'
 export const ShipmentEP = '/api/Shipment'
 
 export const EMplCode = 5000000217;

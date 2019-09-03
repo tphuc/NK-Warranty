@@ -4,19 +4,19 @@ import propTypes from 'prop-types';
 import { Header, SearchBar, Icon } from 'react-native-elements';
 import MenuBtn from '../assets/menuButton';
 import Appbar from '../components/Appbar';
-import DatePicker, { dateToMMDDYYYY } from '../pages/DatePicker';
+import DatePicker, { dateToMMDDYYYY } from '../components/DatePicker';
 
 
 import { cWhiteMain, cRedMain, cRedSecondary, cGreyMain, cGreySecondary, cWhiteSecondary } from '../assets/colors';
 import Tabs from '../components/Tabs';
-import Card from '../components/Cards';
+import VoucherCard from '../components/VoucherCard';
 import { FlatList } from 'react-native';
 import { Route, Redirect } from "react-router-native";
-import { GetListWarrantyReturnByUser, GetHistoryWarrantyReturn } from '../config/api';
+import { GetListWarrantyReturnByUser, GetHistoryWarrantyReturn, EMplCode } from '../config/api';
 import { NO_DATA, SEVER_NOT_RESPOND } from '../config/errors';
 import { VN_NO_WARRANTY, VN_SEVER_NOT_RESPOND } from '../config/words';
 
-import { SetQueryResult, SetQueryParams } from '../redux/actions'
+import { SetHistoryQueryParams } from '../redux/actions'
 import store from '../redux/store';
 
 
@@ -26,14 +26,10 @@ const errorDisplay = {
 }
 
 
-
-
-
-
 const List = (props) => <FlatList
     data={props.data}
     keyExtractor={(item, index) => item.voucherID}
-    renderItem={({ item }) => <Card info={item}></Card>}
+    renderItem={({ item }) => <VoucherCard info={item}></VoucherCard>}
 />
 
 class Index extends Component {
@@ -70,7 +66,7 @@ class Index extends Component {
         switch (route) {
             case '/pending':
                 this.getListPendingWarranty({
-                    'EMplCode': '5000000217',
+                    'EMplCode': EMplCode,
                 })
                 break
 
@@ -78,7 +74,7 @@ class Index extends Component {
                 this.getHistoryWarranty({
                     'FromDate': store.getState() ? store.getState().params['FromDate'] : dateToMMDDYYYY(new Date()),
                     'To__Date': store.getState() ? store.getState().params['To__Date'] : dateToMMDDYYYY(new Date()),
-                    'EMplCode': '5000000217',
+                    'EMplCode': EMplCode,
                 })
                 break
 
@@ -109,7 +105,7 @@ class Index extends Component {
     }
 
     getHistoryWarranty = (params) => {
-        store.dispatch(SetQueryParams(params))
+        store.dispatch(SetHistoryQueryParams(params))
 
         GetHistoryWarrantyReturn({
             voucherID: 'mainCode',
@@ -176,7 +172,7 @@ class Index extends Component {
                         :
                         <FlatList
                             data={this.state.dataPending.length ? this.state.dataPending : [{}, {}]}
-                            renderItem={({ item }) => { return <Card info={item} match={match} searchKey={this.state.searchKey} ></Card> }}
+                            renderItem={({ item }) => { return <VoucherCard info={item} match={match} searchKey={this.state.searchKey} ></VoucherCard> }}
                             keyExtractor={(item, index) => index.toString()}
                             extraData={this.state.searchKey}
                         />}
@@ -197,7 +193,7 @@ class Index extends Component {
                                 :
                                 <FlatList
                                     data={this.state.dataHistory.length ? this.state.dataHistory : [{}, {}]}
-                                    renderItem={({ item }) => { return <Card info={item} match={match} searchKey={this.state.searchKey} ></Card> }}
+                                    renderItem={({ item }) => { return <VoucherCard info={item} match={match} searchKey={this.state.searchKey} ></VoucherCard> }}
                                     keyExtractor={(item, index) => index.toString()}
                                     extraData={this.state.searchKey}
                                 />
@@ -216,7 +212,7 @@ class Index extends Component {
                                 this.getHistoryWarranty({
                                     'FromDate': start,
                                     'To__Date': end,
-                                    'EMplCode': '5000000217',
+                                    'EMplCode': EMplCode,
                                 })
                             }} ></DatePicker>
                     </React.Fragment>

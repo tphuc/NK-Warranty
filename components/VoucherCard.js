@@ -12,8 +12,6 @@ import { cBlueMain, cBluePrimary, cRedMain, cBlueSecondary, cWhiteMain } from '.
 import { borderTopRadius, borderBottomRadius } from '../utils/styling'
 
 
-
-
 const TitlesVN = {
     voucherID: '',
     name: 'Người nhận',
@@ -126,16 +124,16 @@ export default class Index extends Component {
                                 <View style={{
                                     display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: '100%'
                                 }}>
-                                    <Text style={{ color: cWhiteMain, fontWeight: '600', padding:15, fontSize: 17 }} >{this.props.info.voucherID}</Text>
-                                    <View style={{padding: 10}}>
-                                    <Icon
-                                        size={30}
-                                        name='chevron-right'
-                                        type='feather'
-                                        color={cWhiteMain}
-                                    />
+                                    <Text style={{ color: cWhiteMain, fontWeight: '600', padding: 15, fontSize: 17 }} >{this.props.info.voucherID}</Text>
+                                    <View style={{ padding: 10 }}>
+                                        <Icon
+                                            size={30}
+                                            name='chevron-right'
+                                            type='feather'
+                                            color={cWhiteMain}
+                                        />
                                     </View>
-                                    
+
                                 </View>
 
                             </Link>
@@ -149,7 +147,7 @@ export default class Index extends Component {
                                         default:
                                             return <ListItem
                                                 key={index}
-                                                title={ <Text style={{fontSize: 16}}><Text style={{fontWeight:'800'}}>{TitlesVN[key]}:</Text> {this.props.info[key]} </Text>}
+                                                title={<Text style={{ fontSize: 16 }}><Text style={{ fontWeight: '800' }}>{TitlesVN[key]}:</Text> {this.props.info[key]} </Text>}
                                                 rightIcon={this._Icon(key, this.props.info[key])}
                                                 containerStyle={{ ...borderBottomRadius(5) }}
                                                 bottomDivider

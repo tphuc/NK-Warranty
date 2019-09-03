@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 
-import { View, Text, Animated } from 'react-native';
+import { View,  Animated } from 'react-native';
 import CloseBtn from '../assets/closeButton';
 import propTypes from 'prop-types';
 
-import { cRedMain, cWhiteMain } from '../assets/colors'
-
-
-// import console = require('console');
+import { cRedMain, } from '../assets/colors'
 
 
 class Index extends Component {
@@ -53,26 +50,20 @@ class Index extends Component {
                 }
             ).start()
         }
-
     }
-
-
-
-
-
 
 
     render() {
         return <Animated.View ref={ref => this._view = ref} style={{
             position: 'absolute',
-            width: this.state._width ,
+            width: this.state._width,
             height: '100%',
             backgroundColor: cRedMain,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.5,
             shadowRadius: 3,
-            border:0
+            border: 0
         }}>
             <View style={{ position: "absolute", top: 50, right: 5 }}>
                 <CloseBtn onPress={this.props.onPressClose} />

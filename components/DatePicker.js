@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, Modal, Text, TouchableHighlight, } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import { Button } from 'react-native-elements'
-import ListItem from '../components/ListItem';
+import ListItem from './ListItem';
 import { Row, Col, Grid } from 'react-native-easy-grid'
 import { cWhiteMain, cRedMain, cBlueMain } from '../assets/colors';
 import {VN_TIME_TODAY, VN_TIME_LAST_WEEK, VN_TIME_TWO_WEEK, VN_TIME_CUST} from '../config/words';

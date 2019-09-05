@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native'
+import {View, Text, YellowBox} from 'react-native'
 import Main from './pages/MainList';
 import DetailView from './pages/VoucherDetail';
 import HistoryDetail from './components/HistoryDetail';
@@ -7,7 +7,7 @@ import { NativeRouter, Route, Link , Switch} from "react-router-native";
 import store from './redux/store'
 import { Provider } from 'react-redux'
 
-
+YellowBox.ignoreWarnings(['']);
 const Index = () => {
     return(
         <Provider store={store}>

@@ -18,9 +18,7 @@ export default class Index extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {
-            selectedItem: props.selectedItem ? props.selectedItem : (props.items.length ? props.items[0] : {})
-        }
+        this.selectedItem = props.selectedItem ? props.selectedItem : (props.items.length ? props.items[0] : {})
     }
     static propTypes = {
         items: propTypes.arrayOf(propTypes.shape({
@@ -57,7 +55,7 @@ export default class Index extends Component {
     }
 
     getSelectedItem = () => {
-        return this.state.selectedItem
+        return this.selectedItem
     }
 
     render() {
@@ -77,7 +75,7 @@ export default class Index extends Component {
                                         backgroundColor: cRedSecondary,
                                         borderColor: cRedSecondary,
                                     }}
-                                    onPress={(e) => { this.setState({ selectedItem: item }); if(this.props.onChange) this.props.onChange(item)}}
+                                    onPress={(e) => { this.selectedItem = item; if (this.props.onChange) this.props.onChange(item) }}
                                 >
                                     <View
                                         style={{
@@ -87,7 +85,7 @@ export default class Index extends Component {
                                             justifyContent: 'center',
                                             borderBottomColor: cRedSecondary,
                                             borderBottomWidth: 4,
-                                            ...(item.tabName === this.state.selectedItem.tabName) ? this.props.selectedItemStyle : this.props.unselectedItemStyle,
+                                            ...(item.tabName === this.selectedItem.tabName) ? this.props.selectedItemStyle : this.props.unselectedItemStyle,
                                         }}
                                     >
                                         <Text

@@ -4,12 +4,12 @@ import { Header, Icon, Button } from 'react-native-elements';
 import { Dropdown } from 'react-native-material-dropdown';
 import { Row, Col, Grid } from 'react-native-easy-grid'
 import { cWhiteMain, cRedMain, cBlueMain, cRedSecondary } from '../assets/colors';
-import { Link } from 'react-router-native';
+import { Link, Redirect } from 'react-router-native';
 import propTypes from 'prop-types';
 
 import ImagePicker from 'react-native-image-picker';
 import VoucherConfirmModal from './VoucherConfirmModal';
-import {GetListWarrantyReturnByUser, GetListReasonChange, siteCode, userCode, userName, UpdateWarrantyReturn} from '../config/api'
+import { GetListWarrantyReturnByUser, GetListReasonChange, siteCode, userCode, userName, UpdateWarrantyReturn } from '../config/api'
 
 
 const MAIN_LOGS = {
@@ -38,7 +38,7 @@ const sectionSubHeaders = {
 const mapObjectByKeys = (obj, keys) => {
     var newObj = {}
     Object.keys(obj).forEach(key => {
-        if(keys.includes(key))
+        if (keys.includes(key))
             newObj[key] = obj[key]
     })
     return newObj
@@ -116,7 +116,7 @@ export default class Index extends Component {
 
 
     static defaultProps = {
-        info : {
+        info: {
             voucherInfo: {
                 voucherID: '',
                 buyDate: '11/9/2000',
@@ -139,10 +139,11 @@ export default class Index extends Component {
         info: {},
         images: [],
         isModalVisible: false,
-        imageLoading: false
+        imageLoading: false,
+        shouldRedirect: false,
     }
 
-    componentDidMount(){
+    componentDidMount() {
         GetListWarrantyReturnByUser({
             voucherInfo: {
                 voucherID: `mainCode=${this.props.match.params.voucherID}`,
@@ -164,20 +165,20 @@ export default class Index extends Component {
             exlnNote: "exlnNote",
             mainCode: 'mainCode',
             mainDate: 'mainDate',
-        },{
+        }, {
             'EMplCode': '5000000217',
         })
-        .then(data => {
-            this.setState({info: data[0]})
-        })
+            .then(data => {
+                this.setState({ info: data[0] })
+            })
 
         GetListReasonChange({
             value: 'rfrnName'
         })
-        .then(data => {this.reasonChanges = data})
-        
+        .then(data => { this.setState({reasonChanges: data}) })
+
     }
-    
+
     openPhotos = () => {
         // maximum upload 3 picture
         if (this.state.images.length === 3)
@@ -228,18 +229,19 @@ export default class Index extends Component {
             userName: userName,
         }
 
+        console.log(params)
 
         return UpdateWarrantyReturn(params)
         .then(res => console.log(res))
         .catch(res => console.log(res.response))
-        
+
     }
 
     render(props) {
-        var { info } = this.state;
+        var { info, shouldRedirect } = this.state;
         info = mapObjectByKeys(info, ['voucherInfo', 'productInfo', 'warrantyInfo'])
         var { imageLoading, images } = this.state
-
+        if (shouldRedirect) return <Redirect to='/pending'></Redirect>
         return (
             <Fragment>
 
@@ -319,7 +321,9 @@ export default class Index extends Component {
                                     title="Đã giao xong"
                                     buttonStyle={{ backgroundColor: cRedMain, height: 50 }}
                                     titleStyle={{ fontSize: 15 }}
-                                    onPress={() => this.callUpdateWarranty(MAIN_LOGS.success, 'Giao xong')}
+                                    onPress={
+                                        () => { this.callUpdateWarranty(MAIN_LOGS.success, 'Giao xong'); this.setState({shouldRedirect: true})}
+                                    }
                                 />
                             </Col>
                             <Col style={{ padding: 5, height: 100 }}>
@@ -336,11 +340,12 @@ export default class Index extends Component {
 
                 <VoucherConfirmModal
                     visible={this.state.isModalVisible}
-                    onClose={() => this.setState({isModalVisible: false})}
+                    onClose={() => this.setState({ isModalVisible: false })}
                     voucherID={this.props.match.params.voucherID}
-                    optionDropdownData={this.reasonChanges}
-                    onChange={(val) => {
-                        this.callUpdateWarranty(MAIN_LOGS.delay, 'lí do chuyển: ' + val).then(() => this.setState({isModalVisible: false}))
+                    optionDropdownData={this.state.reasonChanges}
+                    onSubmit={(val) => {
+                        this.callUpdateWarranty(MAIN_LOGS.delay, 'lí do chuyển: ' + val);
+                        this.setState({shouldRedirect: true})
                     }}
                 ></VoucherConfirmModal>
 

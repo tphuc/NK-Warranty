@@ -1,6 +1,6 @@
 import axios from 'react-native-axios'
-// import console = require('console');
-export const Proxy = 'https://86aa795e.ngrok.io'
+axios.defaults.timeout = 1000;
+export const Proxy = 'https://18f09299.ngrok.io'
 export const ShipmentEP = '/api/Shipment'
 
 export const EMplCode = 5000000217;
@@ -68,9 +68,12 @@ export const GetHistoryWarrantyReturn = (keymaps, params) => {
 
 
 export const GetListWarrantyReturnByUser = (keymaps, params) => {
-    const queryEndpoint = 'GetListWarrantyReturnByUser'
-    return axios.get(`${Proxy}${ShipmentEP}/${queryEndpoint}`, { params: params }, { timeout: 200 })
+    
+    const queryEndpoint = 'GetListWarrantyReturnByUser?'
+    return axios.get(`${Proxy}${ShipmentEP}/${queryEndpoint}`, { params: params }, {timeout: 200})
+        .catch(err => console.log('asd'))
         .then(res => {
+    
             var returnData = [];
             res.data.data.map(record => {
                 var newdata = {};
@@ -83,8 +86,8 @@ export const GetListWarrantyReturnByUser = (keymaps, params) => {
                 returnData.push(newdata)
             })
             return returnData
-        }
-        )
+        })
+    .catch(err => console.log(err.response))
 }
 
 
@@ -106,10 +109,10 @@ export const GetListReasonChange = (keymaps, params) => {
             return returnData
         }
         )
+
 }
 
 export const UpdateWarrantyReturn = (params) => {
     const queryEndpoint = 'UpdateWarrantyReturn'
-    console.log(params)
     return axios.post(`${Proxy}${ShipmentEP}/${queryEndpoint}`, params)
 }

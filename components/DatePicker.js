@@ -31,7 +31,6 @@ export default class MyDatePicker extends Component {
 
     constructor(props) {
         super(props)
-        console.log(store.getState())
         this.state = {
             option: 'Hôm nay',
             startDate: store.getState().params ? store.getState().params['FromDate'] : dateToMMDDYYYY(new Date()),

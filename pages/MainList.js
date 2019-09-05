@@ -106,7 +106,6 @@ class Index extends Component {
 
     getHistoryWarranty = (params) => {
         store.dispatch(SetHistoryQueryParams(params))
-
         GetHistoryWarrantyReturn({
             voucherID: 'mainCode',
             name: 'custName',
@@ -124,7 +123,7 @@ class Index extends Component {
                 if (data.length) this.setState({ dataHistory: data });
                 else this.setState({ dataHistory: NO_DATA })
             })
-            .catch(res => { console.log(res); this.setState({ dataHistory: SEVER_NOT_RESPOND }) })
+            .catch(res => { this.setState({ dataHistory: SEVER_NOT_RESPOND }) })
     }
 
 
@@ -136,7 +135,7 @@ class Index extends Component {
                     leftComponent={<MenuBtn onPress={() => this.setState({ isAppbarOpened: true })}></MenuBtn>}
                     centerComponent={{ text: this.props.text, style: { color: cWhiteMain, fontWeight: "900", fontSize: 16, } }}
                     containerStyle={{ backgroundColor: cRedMain, paddingBottom: 10, margin: 0, }}
-                    rightComponent={this.tabs && this.tabs.getSelectedItem().route === '/history' && <Icon name='filter' color={cWhiteSecondary} type='feather' onPress={() => { this.setState({ filterModalOpen: true }) }} />}
+                    rightComponent={(this.tabs && this.tabs.getSelectedItem().route === '/history') && <Icon name='filter' color={cWhiteSecondary} type='feather' onPress={() => { this.setState({ filterModalOpen: true }) }} />}
                 />
                 <Tabs items={[
                     {
@@ -214,7 +213,9 @@ class Index extends Component {
                                     'To__Date': end,
                                     'EMplCode': EMplCode,
                                 })
-                            }} ></DatePicker>
+                            }} >
+                        
+                            </DatePicker>
                     </React.Fragment>
                 }
                 />

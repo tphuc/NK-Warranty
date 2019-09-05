@@ -8,15 +8,9 @@ import { cRedMain, cBlueMain, cWhiteMain } from '../assets/colors';
 
 export default class Index extends Component {
 
-    onSubmit = (e) => {
-        if (this.props.onSuccess) this.props.onSuccess();
-        if (!e.defaultPrevented) {
-            console.log(this.dropdown.value())
-        }
-    }
 
     state = {
-        selectOption: '',
+        selectOption: this.props.optionDropdownData ? this.props.optionDropdownData[0].value : '',
         otherReason: ''
     }
 
@@ -27,8 +21,8 @@ export default class Index extends Component {
             optionDropdownData,
             voucherID,
             onChange,
+            onSubmit,
         } = this.props
-
         return (
             <Modal
                 animationType="slide"
@@ -36,14 +30,18 @@ export default class Index extends Component {
                 visible={visible}
             >
                 <Header
-                    leftComponent={<Icon name='chevron-left' type='feather' color={cWhiteMain} onPress={() => { this.setState({ selectOption: '' }); onClose() }} />}
+                    leftComponent={<Icon name='chevron-left' type='feather' color={cWhiteMain} onPress={
+                        () => {
+                            this.setState({ selectOption: '' });
+                            onClose()
+                        }} />}
                     centerComponent={{ text: "CHUYỂN VỀ CHỜ GIAO", style: { color: cWhiteMain, fontWeight: "900", fontSize: 16, } }}
                     containerStyle={{ backgroundColor: cRedMain, paddingBottom: 10, margin: 0 }}
                 />
 
                 <Grid>
                     <Row style={{ maxHeight: 150, display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                        <View style={{}}>
+                        <View >
                             <Text style={{ textAlign: 'center', padding: 10, fontSize: 17 }}>Bạn có chắc muốn chuyển về chờ giao?</Text>
                             <Text style={{ textAlign: 'center', fontWeight: '800', fontSize: 17 }}>{voucherID}</Text>
                         </View>
@@ -60,7 +58,11 @@ export default class Index extends Component {
                                 ref={ref => this.dropdown = ref}
                                 dropdownOffset={{ top: 0 }}
                                 data={optionDropdownData}
-                                onChangeText={(val) => {  this.setState({ selectOption: val }); onChange ? onChange(val) : '' }}
+                                onChangeText={(val) => {
+                                    if (val !== 'Giao lại vì lý do khác') this.setState({ otherReason: '' })
+                                    this.setState({ selectOption: val });
+                                    onChange ? onChange(val) : ''
+                                }}
                             />
                         </Col>
                     </Row>
@@ -71,7 +73,12 @@ export default class Index extends Component {
                                 label="Nhập lí do chuyển"
                                 placeholder='Lí do chuyển khác'
                                 labelStyle={{ color: 'black' }}
-                                onChangeText={(val) => {this.setState({ otherReason: val }); onChange ? onChange() : ''}}
+                                onChangeText={
+                                    (val) => {
+                                        this.setState({ otherReason: val });
+                                        onChange ? onChange() : ''
+                                    }
+                                }
                             />
                         </Row>
 
@@ -81,7 +88,14 @@ export default class Index extends Component {
                         </Col>
                         <Col style={{ maxHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
                             <Col>
-                                <Icon name='check-circle' type='feather' size={50} color={cBlueMain} onPress={(e) => this.onSubmit(e)} />
+                                <Icon name='check-circle' type='feather' size={50} color={this.state.selectOption ? cBlueMain : '#aaaaaa'} onPress={(e) => {
+                                    var returnMessages = this.state.otherReason ? this.state.otherReason : this.state.selectOption;
+                                    if(this.state.selectOption){
+                                        onSubmit(returnMessages);
+                                        onClose()
+                                    }
+                                        
+                                }} />
                             </Col>
                             <Col>
                                 <Icon name='x' type='feather' size={60} color={cRedMain} onPress={() => { this.setState({ selectOption: '' }); onClose() }} />
